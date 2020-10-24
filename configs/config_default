@@ -1,0 +1,6 @@
+[email]
+imap = imap.gmail.com
+requireSSL = yes
+port = 993
+username = gps.utility@gmail.com
+password = supportmailer13
