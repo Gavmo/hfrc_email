@@ -2,7 +2,7 @@
 to a database
 """
 
-import configparser
+
 import imaplib
 import os
 
@@ -10,14 +10,12 @@ import os
 class CheckMail:
     def __init__(self):
         os.chdir('../')
-        config = configparser.ConfigParser()
-        config.read('configs/config')
         # noinspection PyTypeChecker
-        self.mail = imaplib.IMAP4_SSL(host=config['email']['imap'],
-                                      port=config['email']['port']
+        self.mail = imaplib.IMAP4_SSL(host=os.environ.get('IMAPSERVER'),
+                                      port=os.environ.get('IMAPPORT')
                                       )
-        self.mail.login(config['email']['username'],
-                        config['email']['password']
+        self.mail.login(os.environ.get('IMAPUSERNAME'),
+                        os.environ.get('IMAPSECRET')
                         )
         self.mail.select(readonly=True)
         print(self.mail.search(None, 'ALL'))
