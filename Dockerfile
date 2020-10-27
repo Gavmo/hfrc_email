@@ -1,5 +1,5 @@
 
-FROM python:latest
+FROM python:3.9-alpine
 
 ARG build_server=None
 ARG build_port=None
@@ -16,4 +16,7 @@ WORKDIR /usr/src/hfrc_email
 
 COPY . .
 
-RUN python scripts/check_email.py
+#RUN python scripts/check_email.py
+
+CMD [ "python", "scripts/check_email.py" ]
+
