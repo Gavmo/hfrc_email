@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Oct 25, 2020 at 09:58 AM
+-- Generation Time: Oct 27, 2020 at 10:49 AM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.11
 
@@ -89,8 +89,8 @@ CREATE TABLE `positions` (
 CREATE TABLE `user` (
   `user_id` bigint UNSIGNED NOT NULL,
   `selcal_number` int NOT NULL,
-  `f_name` varchar(128) NOT NULL,
-  `l_name` varchar(128) NOT NULL
+  `f_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `l_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -161,7 +161,7 @@ ALTER TABLE `positions`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
