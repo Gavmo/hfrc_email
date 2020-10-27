@@ -10,6 +10,7 @@ import mysql.connector
 
 
 class CheckMail:
+    """Check the email inbox.  Determine msg type and pass info to DataBaseWriter class"""
     def __init__(self):
         os.chdir('../')
         # noinspection PyTypeChecker
@@ -29,7 +30,7 @@ class DatabaseWriter:
             self.sqlconx = mysql.connector.connect(user='root',
                                                    password=os.environ.get('MYSQL_ROOT_PASSWORD'),
                                                    host='172.16.51.171',
-                                                   port=32771,
+                                                   port=32769,
                                                    database='hfrc_data',
                                                    raise_on_warnings=False
                                                    )
@@ -63,7 +64,7 @@ class DatabaseWriter:
 
     def base_exists(self, basename):
         """Check to see if a base exists"""
-        query = rf"""Select * from bases where name = {basename}"""
+        query = f"""Select * from bases where name = '{basename}'"""
         cursor = self.sqlconx.cursor(dictionary=True, buffered=True)
         cursor.execute(query)
         if cursor.rowcount == 1:
@@ -75,7 +76,60 @@ class DatabaseWriter:
 
     def create_base(self, basename):
         """Creates a base.  Other details can be added later"""
-        query = f""""""
+        query = f"""INSERT INTO `bases` (`base_id`, `name`, `latitude`, `longitude`) 
+                VALUES (NULL, '{basename}', NULL, NULL);"""
+        self.execute_query(query)
+
+    def channel_exists(self, freq, ch_number):
+        """Check to see if the channel info exists in the DB"""
+        query = f"""select * 
+                    from channels 
+                    where frequency_khz = {freq}
+                    and channel_number = {ch_number}"""
+        cursor = self.sqlconx.cursor(dictionary=True, buffered=True)
+        cursor.execute(query)
+        if cursor.rowcount == 1:
+            cursor.close()
+            return True
+        else:
+            cursor.close()
+            return False
+
+    def create_channel(self, freq, ch_number):
+        """Create a channel in the DB"""
+        query = f"""INSERT INTO `channels` (`channel_id`, `frequency_khz`, `channel_number`) 
+                    VALUES (NULL, '{freq}', '{ch_number}');"""
+        self.execute_query(query)
+
+    def write_message(self, selcal, msg_timestamp, basename, message, freq, channel, ext_ref):
+        """Validate params and write the message to the DB"""
+        if not self.user_exists(selcal):
+            self.create_user(selcal)
+        if not self.base_exists(basename):
+            self.create_base(basename)
+        if not self.channel_exists(freq, channel):
+            self.create_channel(freq, channel)
+        writequery = f"""insert into `messages` (`msg_id`, 
+                                                 `user_id`, 
+                                                 `base_id`, 
+                                                 `base_timestamp`, 
+                                                 `channel_id`, 
+                                                 `msg`, 
+                                                 `flux_reference`
+                                                 )
+                            VALUES (NULL,
+                                    (select user_id from user where selcal_number = {selcal}),
+                                    (select base_id from bases where name = '{basename}'),
+                                    {msg_timestamp},
+                                    (select channel_id 
+                                       from channels 
+                                      where frequency_khz = {freq} 
+                                        and channel_number = {channel}),
+                                    '{message}',
+                                    '{ext_ref}'
+                                    )
+                    """
+        self.execute_query(writequery)
 
 
 if __name__ == "__main__":
@@ -85,4 +139,11 @@ if __name__ == "__main__":
     if not a.user_exists(1616):
         a.create_user(1616)
     print(a.user_exists(1616))
-
+    a.write_message(1234,
+                    222,
+                    'Bork',
+                    'This is my message',
+                    14585,
+                    23,
+                    'ext_referecnjce'
+                    )
