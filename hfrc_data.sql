@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Oct 27, 2020 at 11:08 AM
+-- Generation Time: Oct 27, 2020 at 11:49 AM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.11
 
@@ -59,7 +59,7 @@ CREATE TABLE `messages` (
   `user_id` bigint NOT NULL,
   `base_timestamp` datetime NOT NULL,
   `base_id` bigint NOT NULL,
-  `msg` bigint NOT NULL,
+  `msg` varchar(512) NOT NULL,
   `flux_reference` varchar(64) NOT NULL,
   `channel_id` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -161,7 +161,7 @@ ALTER TABLE `positions`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
