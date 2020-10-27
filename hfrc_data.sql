@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Oct 27, 2020 at 10:49 AM
+-- Generation Time: Oct 27, 2020 at 11:08 AM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.11
 
@@ -32,8 +32,8 @@ USE `hfrc_data`;
 CREATE TABLE `bases` (
   `base_id` bigint UNSIGNED NOT NULL,
   `name` varchar(64) NOT NULL,
-  `latitude` float NOT NULL,
-  `longitude` float NOT NULL
+  `latitude` float DEFAULT NULL,
+  `longitude` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------

@@ -29,7 +29,7 @@ class DatabaseWriter:
             self.sqlconx = mysql.connector.connect(user='root',
                                                    password=os.environ.get('MYSQL_ROOT_PASSWORD'),
                                                    host='172.16.51.171',
-                                                   port=32769,
+                                                   port=32771,
                                                    database='hfrc_data',
                                                    raise_on_warnings=False
                                                    )
@@ -48,16 +48,34 @@ class DatabaseWriter:
             cursor.close()
             return False
 
-    def create_user(self, selcal_id):
-        """Create a user_id for a selcal number.  Other data can be added manually later"""
-        query = f"""INSERT INTO `user` (`user_id`, `selcal_number`, `f_name`, `l_name`) 
-                    VALUES (NULL, {selcal_id}, NULL, NULL);"""
-        print(query)
+    def execute_query(self, query):
+        """Blindly execute a query"""
         cursor = self.sqlconx.cursor()
         cursor.execute(query)
         self.sqlconx.commit()
         cursor.close()
 
+    def create_user(self, selcal_id):
+        """Create a user_id for a selcal number.  Other data can be added manually later"""
+        query = f"""INSERT INTO `user` (`user_id`, `selcal_number`, `f_name`, `l_name`) 
+                    VALUES (NULL, {selcal_id}, NULL, NULL);"""
+        self.execute_query(query)
+
+    def base_exists(self, basename):
+        """Check to see if a base exists"""
+        query = rf"""Select * from bases where name = {basename}"""
+        cursor = self.sqlconx.cursor(dictionary=True, buffered=True)
+        cursor.execute(query)
+        if cursor.rowcount == 1:
+            cursor.close()
+            return True
+        else:
+            cursor.close()
+            return False
+
+    def create_base(self, basename):
+        """Creates a base.  Other details can be added later"""
+        query = f""""""
 
 
 if __name__ == "__main__":
