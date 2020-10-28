@@ -101,49 +101,91 @@ class DatabaseWriter:
                     VALUES (NULL, '{freq}', '{ch_number}');"""
         self.execute_query(query)
 
+    def check_base_data(self, selcal, basename, channel, frequency):
+        """Convenience function to set up user and network data"""
+        try:
+            if not self.user_exists(selcal):
+                self.create_user(selcal)
+            if not self.base_exists(basename):
+                self.create_base(basename)
+            if not self.channel_exists(frequency, channel):
+                self.create_channel(frequency, channel)
+        except:
+            return False
+        return True
+
     def write_message(self, selcal, msg_timestamp, basename, message, freq, channel, ext_ref):
         """Validate params and write the message to the DB"""
-        if not self.user_exists(selcal):
-            self.create_user(selcal)
-        if not self.base_exists(basename):
-            self.create_base(basename)
-        if not self.channel_exists(freq, channel):
-            self.create_channel(freq, channel)
-        writequery = f"""insert into `messages` (`msg_id`, 
-                                                 `user_id`, 
-                                                 `base_id`, 
-                                                 `base_timestamp`, 
-                                                 `channel_id`, 
-                                                 `msg`, 
-                                                 `flux_reference`
-                                                 )
-                            VALUES (NULL,
-                                    (select user_id from user where selcal_number = {selcal}),
-                                    (select base_id from bases where name = '{basename}'),
-                                    {msg_timestamp},
-                                    (select channel_id 
-                                       from channels 
-                                      where frequency_khz = {freq} 
-                                        and channel_number = {channel}),
-                                    '{message}',
-                                    '{ext_ref}'
-                                    )
-                    """
-        self.execute_query(writequery)
+        if self.check_base_data(selcal, basename, channel, freq):
+            writequery = f"""insert into `messages` (`msg_id`, 
+                                                     `user_id`, 
+                                                     `base_id`, 
+                                                     `base_timestamp`, 
+                                                     `channel_id`, 
+                                                     `msg`, 
+                                                     `flux_reference`
+                                                     )
+                                VALUES (NULL,
+                                        (select user_id from user where selcal_number = {selcal}),
+                                        (select base_id from bases where name = '{basename}'),
+                                        {msg_timestamp},
+                                        (select channel_id 
+                                           from channels 
+                                          where frequency_khz = {freq} 
+                                            and channel_number = {channel}),
+                                        '{message}',
+                                        '{ext_ref}'
+                                        )
+                        """
+            self.execute_query(writequery)
+        else:
+            print("Could not write message due to failure to check network or user data")
+
+    def write_position(self, selcal, msg_timestamp, basename, lat, lon, freq, channel, ext_ref):
+        """Validate user and network data and then write the position data to the DB"""
+        if self.check_base_data(selcal, basename, channel, freq):
+            writequery = f"""INSERT INTO `positions` (`pos_id`, 
+                                                      `user_id`, 
+                                                      `latitude`, 
+                                                      `longitude`, 
+                                                      `base_id`, 
+                                                      `flux_reference`, 
+                                                      `channel_id`,
+                                                      `msg_timestamp`) 
+                             VALUES (NULL, 
+                                     (select user_id from user where selcal_number = {selcal}), 
+                                     {lat}, 
+                                     {lon}, 
+                                     (select base_id from bases where name = '{basename}'), 
+                                     '{ext_ref}', 
+                                     (select channel_id 
+                                           from channels 
+                                          where frequency_khz = {freq} 
+                                            and channel_number = {channel}),
+                                     {msg_timestamp});
+                          """
+            self.execute_query(writequery)
+        else:
+            print("Could not write positions due to failure while checking network or user data")
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
+
     # CheckMail()
-    a = DatabaseWriter()
-    print(a.user_exists(1616))
-    if not a.user_exists(1616):
-        a.create_user(1616)
-    print(a.user_exists(1616))
-    a.write_message(1234,
-                    222,
-                    'Bork',
-                    'This is my message',
-                    14585,
-                    23,
-                    'ext_referecnjce'
-                    )
+    # a = DatabaseWriter()
+    # a.write_message(1234,
+    #                 222,
+    #                 'Bork',
+    #                 'This is my message',
+    #                 14585,
+    #                 23,
+    #                 'ext_referecnjce'
+    #                 )
+    # a.write_position(4321,
+    #                  222,
+    #                  'bork',
+    #                  -27.1234,
+    #                  153.1234,
+    #                  3344,
+    #                  2,
+    #                  'my_ext_ref')
