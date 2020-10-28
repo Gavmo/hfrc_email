@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Generation Time: Oct 27, 2020 at 11:49 AM
+-- Generation Time: Oct 28, 2020 at 09:44 PM
 -- Server version: 8.0.22
 -- PHP Version: 7.4.11
 
@@ -77,7 +77,8 @@ CREATE TABLE `positions` (
   `longitude` float NOT NULL,
   `base_id` bigint NOT NULL,
   `flux_reference` varchar(64) NOT NULL,
-  `channel_id` bigint NOT NULL
+  `channel_id` bigint NOT NULL,
+  `msg_timestamp` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
