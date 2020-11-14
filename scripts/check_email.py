@@ -88,11 +88,10 @@ class DatabaseWriter:
                     and channel_number = {ch_number}"""
         cursor = self.sqlconx.cursor(dictionary=True, buffered=True)
         cursor.execute(query)
+        cursor.close()
         if cursor.rowcount == 1:
-            cursor.close()
             return True
         else:
-            cursor.close()
             return False
 
     def create_channel(self, freq, ch_number):
